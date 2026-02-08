@@ -13,10 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.vainnglory.egoistical.item.TrackerItem;
 import net.vainnglory.egoistical.network.TrackerNetworking;
-import net.vainnglory.egoistical.util.ModRecipes;
-import net.vainnglory.egoistical.util.AdrenalineManager;
-import net.vainnglory.egoistical.util.EMPManager;
-import net.vainnglory.egoistical.util.InventoryHelper;
+import net.vainnglory.egoistical.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +50,8 @@ public class Egoistical implements ModInitializer {
 
         ModRecipes.registerRecipes();
         LOGGER.info("Registered mod recipes");
+
+        ModSounds.registerSounds();
 
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             trackerUpdateTick++;

@@ -1,5 +1,6 @@
 package net.vainnglory.egoistical.item;
 
+import net.minecraft.item.MusicDiscItem;
 import net.minecraft.item.PotionItem;
 import net.vainnglory.egoistical.Egoistical;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -11,6 +12,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.vainnglory.egoistical.util.ModRarities;
+import net.vainnglory.egoistical.util.ModSounds;
 
 public class ModItems {
     public static final Item GREED_RUNE = registerItem("greed_rune",
@@ -39,6 +41,9 @@ public class ModItems {
 
     public static final EMPItem EMP = (EMPItem) registerItem("emp",
             new EMPItem(new FabricItemSettings().maxCount(1), ModRarities.ENDER));
+
+    public static final Item PALE_MUSIC_DISC = registerItem("the_pale_riseth_music_disc",
+            new MusicDiscItem(7, ModSounds.PALE, new FabricItemSettings().maxCount(1).rarity(Rarity.RARE), 210));
 
 
 

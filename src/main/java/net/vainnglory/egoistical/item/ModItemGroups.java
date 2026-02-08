@@ -23,6 +23,7 @@ public class ModItemGroups {
                         entries.add(ModItems.THORNED_INGOT);
                         entries.add(ModItems.TRICK_BAG);
                         entries.add(ModItems.MARKSMANS_PROOF);
+                        entries.add(ModItems.PALE_MUSIC_DISC);
 
                     }).build());
 

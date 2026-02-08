@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "egoistical:item/the_pale_riseth_music_disc"
+  }
+}
