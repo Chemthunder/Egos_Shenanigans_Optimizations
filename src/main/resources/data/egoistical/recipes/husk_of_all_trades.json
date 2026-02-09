@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " # ",
+    "#S#",
+    " I "
+  ],
+  "key": {
+    "#": {
+      "item": "egoistical:thorned_ingot"
+    },
+    "S": {
+      "item": "minecraft:diamond_sword"
+    },
+    "I": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "egoistical:husk_of_all_trades"
+  }
+}

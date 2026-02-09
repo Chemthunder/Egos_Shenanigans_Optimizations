@@ -11,5 +11,10 @@
   "effect.egoistical.adrenaline": "Adrenaline",
   "item.egoistical.the_pale_riseth_music_disc": "The Pale Riseth Music Disc",
   "item.egoistical.the_pale_riseth_music_disc.desc": "D_Man - The Pale Riseth",
+  "item.egoistical.husk_of_all_trades": "Husk of All Trades",
+  "enchantment.egoistical.metamorphosis": "Metamorphosis",
+  "enchantment.egoistical.metamorphosis.desc": "when below 4 hp, right click with your sword to turn into a cloud of mist and be able to escape",
+  "enchantment.egoistical.blood_offering": "Blood Offering",
+  "enchantment.egoistical.blood_offering.desc": "sacrifice some speed and one of your charge slot for increased damage.",
   "itemgroup.ego": "Ego's Shenanigans"
 }

@@ -24,6 +24,7 @@ public class ModItemGroups {
                         entries.add(ModItems.TRICK_BAG);
                         entries.add(ModItems.MARKSMANS_PROOF);
                         entries.add(ModItems.PALE_MUSIC_DISC);
+                        entries.add(ModItems.HUSK_OF_ALL_TRADES);
 
                     }).build());
 

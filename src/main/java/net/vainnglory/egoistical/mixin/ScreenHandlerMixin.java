@@ -16,13 +16,15 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import net.vainnglory.egoistical.item.HuskOfAllTradesItem;
 
 @Mixin(ScreenHandler.class)
 public abstract class ScreenHandlerMixin {
 
     @Inject(method = "onSlotClick", at = @At("HEAD"), cancellable = true)
     private void onSlotClickForItemCharging(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
-        if (button != 1 || actionType != SlotActionType.PICKUP) {
+        if (button != 1 || actionType != SlotActionType.PICKUP)
+            {
             return;
         }
 
@@ -47,6 +49,10 @@ public abstract class ScreenHandlerMixin {
 
         if (slotStack.getItem() instanceof TrickBagItem && TrickBagItem.isEmpty(slotStack)) {
             handleTrickBagFilling(player, slot, cursorStack, slotStack, ci);
+            return;
+        }
+        if (slotStack.getItem() instanceof HuskOfAllTradesItem) {
+            handleHuskModeSelection(player, slot, cursorStack, slotStack, ci);
             return;
         }
     }
@@ -126,5 +132,45 @@ public abstract class ScreenHandlerMixin {
             case TrickBagItem.SOUL_SAND -> "Soul Sand";
             default -> "Unknown";
         };
+    }
+    private void handleHuskModeSelection(PlayerEntity player, Slot slot, ItemStack cursorStack, ItemStack slotStack, CallbackInfo ci) {
+        String mode = null;
+
+        if (cursorStack.isOf(Items.SOUL_SAND)) {
+            mode = HuskOfAllTradesItem.MODE_SOUL_SAND;
+        } else if (cursorStack.isOf(Items.SPIDER_EYE)) {
+            mode = HuskOfAllTradesItem.MODE_SPIDER_EYE;
+        } else if (cursorStack.isOf(Items.ENDER_PEARL)) {
+            mode = HuskOfAllTradesItem.MODE_ENDER_PEARL;
+        } else if (cursorStack.isOf(Items.GHAST_TEAR)) {
+            mode = HuskOfAllTradesItem.MODE_GHAST_TEAR;
+        }
+
+        if (mode == null) {
+            return;
+        }
+
+        String currentMode = HuskOfAllTradesItem.getMode(slotStack);
+        if (mode.equals(currentMode)) {
+            player.sendMessage(Text.literal("Already set to " + HuskOfAllTradesItem.getModeDisplayName(mode))
+                    .formatted(Formatting.GOLD), true);
+            ci.cancel();
+            return;
+        }
+
+        cursorStack.decrement(1);
+        HuskOfAllTradesItem.setMode(slotStack, mode);
+        slot.markDirty();
+
+        player.sendMessage(Text.literal("Mode: " + HuskOfAllTradesItem.getModeDisplayName(mode))
+                .formatted(Formatting.GOLD), true);
+        player.playSound(SoundEvents.BLOCK_SMITHING_TABLE_USE, 1.0f, 1.2f);
+
+        if (player instanceof ServerPlayerEntity serverPlayer) {
+            serverPlayer.getInventory().markDirty();
+            serverPlayer.playerScreenHandler.sendContentUpdates();
+        }
+
+        ci.cancel();
     }
 }

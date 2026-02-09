@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "ExampleMixin",
+    "HuskAttackMixin",
     "InventoryClickMixin",
     "ItemPickupMixin",
     "LivingEntityDamageMixin",
@@ -20,6 +21,7 @@
   "client": [
     "EntityGlowMixin",
     "EntityMixin",
-    "EntityRendererMixin"
+    "EntityRendererMixin",
+    "TrueInvisibilityMixin"
   ]
 }

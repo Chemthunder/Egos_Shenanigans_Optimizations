@@ -1,0 +1,12 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "egoistical:item/husk_of_all_trades_0"
+  },
+  "overrides": [
+    { "predicate": { "egoistical:charge": 0.0 }, "model": "egoistical:item/husk_of_all_trades_0" },
+    { "predicate": { "egoistical:charge": 0.33 }, "model": "egoistical:item/husk_of_all_trades_1" },
+    { "predicate": { "egoistical:charge": 0.66 }, "model": "egoistical:item/husk_of_all_trades_2" },
+    { "predicate": { "egoistical:charge": 1.0 }, "model": "egoistical:item/husk_of_all_trades_3" }
+  ]
+}

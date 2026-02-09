@@ -13,6 +13,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.vainnglory.egoistical.util.ModRarities;
 import net.vainnglory.egoistical.util.ModSounds;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 
 public class ModItems {
     public static final Item GREED_RUNE = registerItem("greed_rune",
@@ -45,7 +46,8 @@ public class ModItems {
     public static final Item PALE_MUSIC_DISC = registerItem("the_pale_riseth_music_disc",
             new MusicDiscItem(7, ModSounds.PALE, new FabricItemSettings().maxCount(1).rarity(Rarity.RARE), 210));
 
-
+    public static final HuskOfAllTradesItem HUSK_OF_ALL_TRADES = (HuskOfAllTradesItem) registerItem("husk_of_all_trades",
+            new HuskOfAllTradesItem(new FabricItemSettings().maxCount(1), ModRarities.GOLDEN));
 
 
     private static Item registerItem(String name, Item item) {
@@ -65,6 +67,7 @@ public class ModItems {
             content.add(ADRENALINE_SHOT_FILLED);
             content.add(MARKSMANS_PROOF);
             content.add(EMP);
+            content.add(HUSK_OF_ALL_TRADES);
         });
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(content -> {
             content.add(THORNED_INGOT);

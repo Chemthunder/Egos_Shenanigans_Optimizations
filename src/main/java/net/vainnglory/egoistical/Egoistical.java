@@ -16,6 +16,10 @@ import net.vainnglory.egoistical.network.TrackerNetworking;
 import net.vainnglory.egoistical.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import net.vainnglory.egoistical.util.HuskHealthManager;
+import net.vainnglory.egoistical.util.HuskProjectileManager;
+import net.vainnglory.egoistical.enchantment.ModEnchantments;
+import net.vainnglory.egoistical.util.MetamorphosisManager;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,6 +57,9 @@ public class Egoistical implements ModInitializer {
 
         ModSounds.registerSounds();
 
+        ModEnchantments.registerEnchantments();
+        LOGGER.info("Registered mod enchantments");
+
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             trackerUpdateTick++;
             thornedIngotTick++;
@@ -68,6 +75,10 @@ public class Egoistical implements ModInitializer {
                 thornedIngotTick = 0;
                 shouldDamageThornedIngot = true;
             }
+            HuskHealthManager.tick(server.getOverworld().getTime(), server);
+            HuskProjectileManager.tick(server);
+
+            MetamorphosisManager.tick(server.getOverworld().getTime(), server);
 
 
             EMPManager.tick(server.getOverworld().getTime());
@@ -108,6 +119,7 @@ public class Egoistical implements ModInitializer {
             AdrenalineManager.cleanup(uuid);
             EMPManager.cleanup(uuid);
             playersWithAdrenaline.remove(uuid);
+            HuskHealthManager.cleanupFull(newPlayer);
             LOGGER.info("Cleaned up adrenaline data for player: {}", newPlayer.getName().getString());
         });
 

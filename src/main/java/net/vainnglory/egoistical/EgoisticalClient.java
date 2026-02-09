@@ -13,6 +13,7 @@ import net.vainnglory.egoistical.item.TrickBagItem;
 import net.vainnglory.egoistical.network.TrackerNetworking;
 import net.vainnglory.egoistical.util.BeingWatchedHudRenderer;
 import net.vainnglory.egoistical.util.InventoryHelper;
+import net.vainnglory.egoistical.item.HuskOfAllTradesItem;
 
 public class EgoisticalClient implements ClientModInitializer {
 
@@ -39,6 +40,14 @@ public class EgoisticalClient implements ClientModInitializer {
                 new Identifier("egoistical", "filled"),
                 (stack, world, entity, seed) -> {
                     return TrickBagItem.isFilled(stack) ? 1.0f : 0.0f;
+                }
+        );
+
+        ModelPredicateProviderRegistry.register(
+                ModItems.HUSK_OF_ALL_TRADES,
+                new Identifier("egoistical", "charge"),
+                (stack, world, entity, seed) -> {
+                    return HuskOfAllTradesItem.getChargePredicate(stack);
                 }
         );
 
