@@ -291,9 +291,9 @@ public class HuskOfAllTradesItem extends SwordItem {
                     1, 0, 0.05, 0, 0.02);
         }
 
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 50, 9, false, false, true));
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, 50, 128, false, false, true));
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 50, 4, false, false, true));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 20, 9, false, false, true));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, 20, 128, false, false, true));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 20, 4, false, false, true));
 
         target.sendMessage(Text.literal("Slammed!").formatted(Formatting.RED), true);
         player.sendMessage(Text.literal("Slammed " + target.getName().getString()).formatted(Formatting.GOLD), true);
@@ -302,7 +302,7 @@ public class HuskOfAllTradesItem extends SwordItem {
                 SoundEvents.ENTITY_IRON_GOLEM_ATTACK, SoundCategory.PLAYERS, 1.5f, 0.5f);
 
         setCharges(stack, getCharges(stack) - 1);
-        player.getItemCooldownManager().set(this, 20);
+        player.getItemCooldownManager().set(this, 160);
         return TypedActionResult.success(stack);
     }
 
@@ -373,7 +373,7 @@ public class HuskOfAllTradesItem extends SwordItem {
             int charges = getCharges(stack);
 
             Vec3d lookVec = player.getRotationVec(1.0f);
-            Vec3d destination = player.getPos().add(lookVec.multiply(30.0));
+            Vec3d destination = player.getPos().add(lookVec.multiply(60.0));
 
             for (int i = 0; i < 32; i++) {
                 world.spawnParticles(ParticleTypes.PORTAL,

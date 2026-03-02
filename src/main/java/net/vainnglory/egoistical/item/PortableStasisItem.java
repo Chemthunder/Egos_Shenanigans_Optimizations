@@ -26,7 +26,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.block.Blocks;
+import net.vainnglory.egoistical.util.BoundLodestoneCache;
 import net.vainnglory.egoistical.util.ModRarities;
+import net.vainnglory.egoistical.util.PendingVoidTeleport;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
@@ -40,7 +42,7 @@ public class PortableStasisItem extends Item {
     private final ModRarities rarity;
 
     private static final ChunkTicketType<ChunkPos> STASIS_TICKET = ChunkTicketType.create(
-            "egoistical_stasis", Comparator.comparingLong(ChunkPos::toLong), 20 * 30 // 30 seconds
+            "egoistical_stasis", Comparator.comparingLong(ChunkPos::toLong), 20 * 30
     );
 
     public PortableStasisItem(Settings settings, ModRarities rarity) {
@@ -50,9 +52,7 @@ public class PortableStasisItem extends Item {
 
     @Override
     public Text getName(ItemStack stack) {
-        Text baseName = super.getName(stack);
-
-        return baseName.copy().setStyle(Style.EMPTY.withColor(rarity.color));
+        return super.getName(stack).copy().setStyle(Style.EMPTY.withColor(rarity.color));
     }
 
     @Override
@@ -69,7 +69,6 @@ public class PortableStasisItem extends Item {
                 bindToLodestone(stack, pos, world);
                 player.sendMessage(Text.literal("Stasis bound to lodestone at " + pos.getX() + ", " + pos.getY() + ", " + pos.getZ())
                         .formatted(Formatting.GOLD), true);
-
                 world.playSound(null, pos, SoundEvents.ITEM_LODESTONE_COMPASS_LOCK, SoundCategory.PLAYERS, 1.0f, 1.0f);
             }
             return ActionResult.success(world.isClient);
@@ -99,12 +98,9 @@ public class PortableStasisItem extends Item {
 
             if (teleportToLodestone(serverPlayer, stack)) {
                 setCharge(stack, 0);
-
                 clearBinding(stack);
-
                 serverPlayer.getInventory().markDirty();
                 serverPlayer.playerScreenHandler.sendContentUpdates();
-
                 return TypedActionResult.success(stack);
             } else {
                 user.sendMessage(Text.literal("Lodestone no longer exists! Binding cleared.")
@@ -121,9 +117,7 @@ public class PortableStasisItem extends Item {
         BlockPos lodestonePos = getBoundLodestonePos(stack);
         String dimensionId = getBoundLodestoneDimension(stack);
 
-        if (lodestonePos == null || dimensionId == null) {
-            return false;
-        }
+        if (lodestonePos == null || dimensionId == null) return false;
 
         MinecraftServer server = player.getServer();
         if (server == null) return false;
@@ -131,18 +125,14 @@ public class PortableStasisItem extends Item {
         RegistryKey<World> targetDimensionKey = RegistryKey.of(RegistryKeys.WORLD, new Identifier(dimensionId));
         ServerWorld targetWorld = server.getWorld(targetDimensionKey);
 
-        if (targetWorld == null) {
-            return false;
-        }
+        if (targetWorld == null) return false;
 
         ChunkPos chunkPos = new ChunkPos(lodestonePos);
         targetWorld.getChunkManager().addTicket(STASIS_TICKET, chunkPos, 3, chunkPos);
 
-        if (!targetWorld.getBlockState(lodestonePos).isOf(Blocks.LODESTONE)) {
-            return false;
-        }
+        if (!targetWorld.getBlockState(lodestonePos).isOf(Blocks.LODESTONE)) return false;
 
-        BlockPos teleportPos = lodestonePos.up();
+        boolean isTrapped = targetWorld.getBlockState(lodestonePos.up()).isOf(Blocks.RESPAWN_ANCHOR);
 
         double originalX = player.getX();
         double originalY = player.getY();
@@ -160,26 +150,43 @@ public class PortableStasisItem extends Item {
                     1, 0, 0, 0, 0.1);
         }
 
-        player.teleport(targetWorld,
-                teleportPos.getX() + 0.5,
-                teleportPos.getY(),
-                teleportPos.getZ() + 0.5,
-                player.getYaw(),
-                player.getPitch());
+        if (isTrapped) {
+            player.sendMessage(Text.literal("Something feels wrong...")
+                    .formatted(Formatting.DARK_RED), true);
 
-        targetWorld.playSound(null, teleportPos,
-                SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1.0f, 1.0f);
+            player.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1.0f, 0.3f);
 
-        for (int i = 0; i < 32; i++) {
-            targetWorld.spawnParticles(ParticleTypes.REVERSE_PORTAL,
-                    teleportPos.getX() + 0.5 + (targetWorld.random.nextDouble() - 0.5) * 2,
-                    teleportPos.getY() + targetWorld.random.nextDouble() * 2,
-                    teleportPos.getZ() + 0.5 + (targetWorld.random.nextDouble() - 0.5) * 2,
-                    1, 0, 0, 0, 0.1);
+            PendingVoidTeleport.schedule(
+                    player,
+                    targetWorld.getTime(),
+                    lodestonePos.getX() + 0.5,
+                    lodestonePos.getZ() + 0.5,
+                    dimensionId
+            );
+        } else {
+            BlockPos teleportPos = lodestonePos.up();
+
+            player.teleport(targetWorld,
+                    teleportPos.getX() + 0.5,
+                    teleportPos.getY(),
+                    teleportPos.getZ() + 0.5,
+                    player.getYaw(),
+                    player.getPitch());
+
+            targetWorld.playSound(null, teleportPos,
+                    SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1.0f, 1.0f);
+
+            for (int i = 0; i < 32; i++) {
+                targetWorld.spawnParticles(ParticleTypes.REVERSE_PORTAL,
+                        teleportPos.getX() + 0.5 + (targetWorld.random.nextDouble() - 0.5) * 2,
+                        teleportPos.getY() + targetWorld.random.nextDouble() * 2,
+                        teleportPos.getZ() + 0.5 + (targetWorld.random.nextDouble() - 0.5) * 2,
+                        1, 0, 0, 0, 0.1);
+            }
+
+            player.sendMessage(Text.literal("Warped to lodestone!")
+                    .formatted(Formatting.GOLD), true);
         }
-
-        player.sendMessage(Text.literal("Warped to lodestone!")
-                .formatted(Formatting.GOLD), true);
 
         return true;
     }
@@ -207,11 +214,16 @@ public class PortableStasisItem extends Item {
         nbt.putInt(LODESTONE_POS_KEY + "Y", pos.getY());
         nbt.putInt(LODESTONE_POS_KEY + "Z", pos.getZ());
         nbt.putString(LODESTONE_DIMENSION_KEY, world.getRegistryKey().getValue().toString());
+
+        BoundLodestoneCache.add(pos, world.getRegistryKey().getValue().toString());
     }
 
     private void clearBinding(ItemStack stack) {
         NbtCompound nbt = stack.getNbt();
         if (nbt != null) {
+            BlockPos pos = getBoundLodestonePos(stack);
+            if (pos != null) BoundLodestoneCache.remove(pos);
+
             nbt.remove(LODESTONE_POS_KEY + "X");
             nbt.remove(LODESTONE_POS_KEY + "Y");
             nbt.remove(LODESTONE_POS_KEY + "Z");
@@ -263,7 +275,6 @@ public class PortableStasisItem extends Item {
             if (pos != null && dim != null) {
                 String dimName = dim.replace("minecraft:", "").replace("_", " ");
                 dimName = dimName.substring(0, 1).toUpperCase() + dimName.substring(1);
-
                 tooltip.add(Text.literal("Bound to: " + pos.getX() + ", " + pos.getY() + ", " + pos.getZ())
                         .formatted(Formatting.GOLD));
                 tooltip.add(Text.literal("Dimension: " + dimName)
@@ -284,3 +295,4 @@ public class PortableStasisItem extends Item {
         return false;
     }
 }
+

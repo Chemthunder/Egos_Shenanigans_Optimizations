@@ -1,5 +1,14 @@
 package net.vainnglory.egoistical;
 
+import net.vainnglory.egoistical.util.PendingVoidTeleport;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.block.Blocks;
+import net.minecraft.util.math.BlockPos;
+import net.vainnglory.egoistical.item.PortableStasisItem;
+import java.util.Map;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.vainnglory.egoistical.util.ForEgoOnlyManager;
+import net.vainnglory.egoistical.util.ModGameRules;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.vainnglory.egoistical.effect.ModEffects;
 import net.vainnglory.egoistical.item.ModItemGroups;
@@ -60,9 +69,31 @@ public class Egoistical implements ModInitializer {
         ModEnchantments.registerEnchantments();
         LOGGER.info("Registered mod enchantments");
 
+        ModGameRules.registerGameRules();
+
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             trackerUpdateTick++;
             thornedIngotTick++;
+            PendingVoidTeleport.tick(server, server.getOverworld().getTime());
+
+            ServerTickEvents.END_WORLD_TICK.register(world -> {
+                if (world.getTime() % 60 != 0) return;
+
+                String worldId = world.getRegistryKey().getValue().toString();
+
+                for (Map.Entry<BlockPos, String> entry : net.vainnglory.egoistical.util.BoundLodestoneCache.getAll().entrySet()) {
+                    if (!entry.getValue().equals(worldId)) continue;
+                    BlockPos pos = entry.getKey();
+                    if (!world.getBlockState(pos).isOf(Blocks.LODESTONE)) continue;
+
+                    world.spawnParticles(ParticleTypes.SOUL_FIRE_FLAME,
+                            pos.getX() + 0.5,
+                            pos.getY() + 1.1,
+                            pos.getZ() + 0.5,
+                            1, 0.15, 0.0, 0.15, 0.01);
+                }
+            });
+
 
             boolean shouldUpdateTrackers = false;
             if (trackerUpdateTick >= TRACKER_UPDATE_INTERVAL) {
@@ -124,7 +155,15 @@ public class Egoistical implements ModInitializer {
         });
 
         LOGGER.info("Egoistical Mod initialized successfully");
+
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            if (ForEgoOnlyManager.isActive(server)) {
+                ForEgoOnlyManager.stripRestrictedItems(handler.player);
+            }
+        });
+
     }
+
 
     private void handleThornedIngotDamage(ServerPlayerEntity player) {
         if (player.isCreative() || player.isSpectator()) {

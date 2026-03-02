@@ -26,8 +26,7 @@ public class TrueInvisibilityMixin {
         if (entity instanceof PlayerEntity player) {
             if (player.hasStatusEffect(StatusEffects.INVISIBILITY)) {
                 ItemStack mainHand = player.getMainHandStack();
-                if (mainHand.isOf(ModItems.HUSK_OF_ALL_TRADES)
-                        && EnchantmentHelper.getLevel(ModEnchantments.METAMORPHOSIS, mainHand) > 0) {
+                if (mainHand.isOf(ModItems.HUSK_OF_ALL_TRADES)) {
                     ci.cancel();
                 }
             }

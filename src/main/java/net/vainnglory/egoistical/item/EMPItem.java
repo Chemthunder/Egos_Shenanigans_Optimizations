@@ -22,7 +22,7 @@ import java.util.List;
 
 public class EMPItem extends Item {
     private final ModRarities rarity;
-    private static final int COOLDOWN_TICKS = 1600;
+    private static final int COOLDOWN_TICKS = 2400; // 2 minutes
     private static final int EMP_DURATION_TICKS = 700;
     private static final double EMP_RANGE = 50.0;
 
@@ -56,6 +56,13 @@ public class EMPItem extends Item {
                 if (target.squaredDistanceTo(user) <= EMP_RANGE * EMP_RANGE) {
                     EMPManager.disableEnchantments(target, EMP_DURATION_TICKS);
 
+                    for (int i = 0; i < target.getInventory().size(); i++) {
+                        ItemStack invStack = target.getInventory().getStack(i);
+                        if (invStack.getItem() instanceof EMPItem empItem) {
+                            target.getItemCooldownManager().set(empItem, COOLDOWN_TICKS);
+                        }
+                    }
+
                     if (target != user) {
                         target.sendMessage(Text.literal("Your equipment has been disrupted!?")
                                 .formatted(Formatting.RED), true);
@@ -76,6 +83,8 @@ public class EMPItem extends Item {
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         tooltip.add(Text.literal("Disables all enchantments nearby").formatted(Formatting.GRAY));
         tooltip.add(Text.literal("Duration: 35 seconds").formatted(Formatting.GRAY));
-        tooltip.add(Text.literal("Cooldown: 1m 20s").formatted(Formatting.DARK_GRAY));
+        tooltip.add(Text.literal("Cooldown: 2 minutes").formatted(Formatting.DARK_GRAY));
+        tooltip.add(Text.literal("Disables nearby EMPs on use").formatted(Formatting.DARK_GRAY));
     }
 }
+
