@@ -33,27 +33,28 @@ public class AdrenalineShotItem extends Item {
 
     @Override
     public Text getName(ItemStack stack) {
-        Text baseName = super.getName(stack);
-
-        return baseName.copy().setStyle(Style.EMPTY.withColor(rarity.color));
+        return super.getName(stack).copy().styled(style -> style.withColor(rarity.color));
     }
+
+    // alternatively you can just use a hexcode here :p
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
 
+        if (!world.isClient) {
         if (!filled) {
-            if (!world.isClient) {
                 user.sendMessage(Text.literal("The adrenaline shot is empty!").formatted(Formatting.RED), true);
-            }
-            return TypedActionResult.fail(stack);
         }
 
-        if (!world.isClient && user instanceof ServerPlayerEntity serverPlayer) {
+        if (user instanceof ServerPlayerEntity serverPlayer) {
             applyAdrenalineEffect(serverPlayer, serverPlayer);
 
             ItemStack emptyShot = new ItemStack(ModItems.ADRENALINE_SHOT_EMPTY, stack.getCount());
             return TypedActionResult.success(emptyShot);
+        }
+        } else {
+            return TypedActionResult.fail(stack);
         }
 
         return TypedActionResult.consume(stack);
@@ -61,15 +62,10 @@ public class AdrenalineShotItem extends Item {
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
+        if (!world.isClient) {
         if (!filled) {
-            if (!user.getWorld().isClient) {
                 user.sendMessage(Text.literal("The adrenaline shot is empty!").formatted(Formatting.GOLD), true);
-            }
             return ActionResult.FAIL;
-        }
-
-        if (user.getWorld().isClient) {
-            return ActionResult.PASS;
         }
 
         if (entity instanceof ServerPlayerEntity target && user instanceof ServerPlayerEntity serverUser) {
@@ -82,6 +78,9 @@ public class AdrenalineShotItem extends Item {
             serverUser.playerScreenHandler.sendContentUpdates();
 
             return ActionResult.SUCCESS;
+        }
+        } else {
+            return ActionResult.PASS;
         }
 
         return ActionResult.PASS;
