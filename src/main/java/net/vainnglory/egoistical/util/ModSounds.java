@@ -17,6 +17,5 @@ public class ModSounds {
 
     public static void registerSounds() {
         Egoistical.LOGGER.info("Reggistering Sounds for Bounty Hunting with " + Egoistical.MOD_ID);
-
     }
 }

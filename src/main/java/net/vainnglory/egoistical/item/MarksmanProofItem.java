@@ -16,6 +16,6 @@ public class MarksmanProofItem extends Item {
 
     @Override
     public Text getName(ItemStack stack) {
-        return super.getName(stack).copy().setStyle(Style.EMPTY.withColor(rarity.color));
+        return super.getName(stack).copy().styled(style -> style.withColor(rarity.color));
     }
 }

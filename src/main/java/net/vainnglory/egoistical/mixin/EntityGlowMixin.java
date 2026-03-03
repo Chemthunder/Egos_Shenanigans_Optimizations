@@ -11,27 +11,17 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
-public class EntityGlowMixin {
+public abstract class EntityGlowMixin {
 
     @Inject(method = "isGlowing", at = @At("HEAD"), cancellable = true)
     private void greedRuneGlowEffect(CallbackInfoReturnable<Boolean> cir) {
         Entity self = (Entity) (Object) this;
-
-        if (!(self instanceof PlayerEntity)) {
-            return;
-        }
-
         MinecraftClient client = MinecraftClient.getInstance();
-        if (client.player == null || client.world == null) {
-            return;
-        }
 
-        if (self.equals(client.player)) {
-            return;
-        }
-
-        if (InventoryHelper.hasItem(client.player, ModItems.GREED_RUNE)) {
-            cir.setReturnValue(true);
+        if (self instanceof PlayerEntity && client.player != null && client.world != null && self.equals(client.player)) {
+            if (InventoryHelper.hasItem(client.player, ModItems.GREED_RUNE)) {
+                cir.setReturnValue(true);
+            }
         }
     }
 }

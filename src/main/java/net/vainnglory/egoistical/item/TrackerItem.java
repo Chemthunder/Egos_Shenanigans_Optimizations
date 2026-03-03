@@ -29,9 +29,7 @@ public class TrackerItem extends Item {
 
     @Override
     public Text getName(ItemStack stack) {
-        Text baseName = super.getName(stack);
-
-        return baseName.copy().setStyle(Style.EMPTY.withColor(rarity.color));
+        return super.getName(stack).copy().styled(style -> style.withColor(rarity.color));
     }
 
     @Override
@@ -60,9 +58,7 @@ public class TrackerItem extends Item {
         }
 
         if (entity instanceof PlayerEntity targetPlayer) {
-            if (user.isSneaking()) {
-                return ActionResult.PASS;
-            }
+            if (!user.isSneaking) {
 
             ItemStack heldStack = user.getStackInHand(hand);
             setTrackedPlayer(heldStack, targetPlayer);
@@ -76,6 +72,7 @@ public class TrackerItem extends Item {
             }
 
             return ActionResult.SUCCESS;
+        }
         }
         return ActionResult.PASS;
     }

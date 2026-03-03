@@ -7,7 +7,6 @@ import net.minecraft.util.Identifier;
 import net.vainnglory.egoistical.Egoistical;
 
 public class ModEnchantments {
-
     public static final Enchantment METAMORPHOSIS = Registry.register(
             Registries.ENCHANTMENT,
             new Identifier(Egoistical.MOD_ID, "metamorphosis"),

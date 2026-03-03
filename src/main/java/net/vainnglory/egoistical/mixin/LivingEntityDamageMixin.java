@@ -10,15 +10,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
-public class LivingEntityDamageMixin {
-
+public abstract class LivingEntityDamageMixin {
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
     private void preventDamageWithAdrenaline(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity entity = (LivingEntity) (Object) this;
 
         if (entity.hasStatusEffect(ModEffects.ADRENALINE)) {
             AdrenalineManager.addStoredDamage(entity.getUuid(), amount, source);
-
             cir.setReturnValue(false);
         }
     }

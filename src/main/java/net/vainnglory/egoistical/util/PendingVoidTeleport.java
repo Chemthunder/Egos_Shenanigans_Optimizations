@@ -19,11 +19,8 @@ import java.util.Map;
 import java.util.UUID;
 
 public class PendingVoidTeleport {
-
     private record Entry(long scheduledAt, long teleportAt, double x, double z, String dimensionId) {}
-
     private static final Map<UUID, Entry> pending = new HashMap<>();
-
     private static final int DELAY = 100; // 5 seconds
 
     public static void schedule(ServerPlayerEntity player, long currentTime, double x, double z, String dimensionId) {
@@ -89,4 +86,4 @@ public class PendingVoidTeleport {
     }
 }
 
-
+// possibly written by chatGPT

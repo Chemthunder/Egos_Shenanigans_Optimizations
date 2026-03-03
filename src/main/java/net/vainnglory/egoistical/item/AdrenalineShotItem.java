@@ -24,7 +24,6 @@ public class AdrenalineShotItem extends Item {
     private final boolean filled;
     private final ModRarities rarity;
 
-
     public AdrenalineShotItem(Settings settings, ModRarities rarity, boolean filled) {
         super(settings);
         this.filled = filled;
@@ -43,16 +42,15 @@ public class AdrenalineShotItem extends Item {
         ItemStack stack = user.getStackInHand(hand);
 
         if (!world.isClient) {
-        if (!filled) {
-                user.sendMessage(Text.literal("The adrenaline shot is empty!").formatted(Formatting.RED), true);
-        }
+            if (!filled) {
+                    user.sendMessage(Text.literal("The adrenaline shot is empty!").formatted(Formatting.RED), true);
+            }
 
-        if (user instanceof ServerPlayerEntity serverPlayer) {
-            applyAdrenalineEffect(serverPlayer, serverPlayer);
+            if (user instanceof ServerPlayerEntity serverPlayer) {
+                applyAdrenalineEffect(serverPlayer, serverPlayer);
 
-            ItemStack emptyShot = new ItemStack(ModItems.ADRENALINE_SHOT_EMPTY, stack.getCount());
-            return TypedActionResult.success(emptyShot);
-        }
+                ItemStack emptyShot = new ItemStack(ModItems.ADRENALINE_SHOT_EMPTY, stack.getCount());
+                return TypedActionResult.success(emptyShot);
         } else {
             return TypedActionResult.fail(stack);
         }
@@ -63,22 +61,22 @@ public class AdrenalineShotItem extends Item {
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!world.isClient) {
-        if (!filled) {
+            if (!filled) {
                 user.sendMessage(Text.literal("The adrenaline shot is empty!").formatted(Formatting.GOLD), true);
-            return ActionResult.FAIL;
-        }
+                return ActionResult.FAIL;
+            }
 
-        if (entity instanceof ServerPlayerEntity target && user instanceof ServerPlayerEntity serverUser) {
-            applyAdrenalineEffect(serverUser, target);
+            if (entity instanceof ServerPlayerEntity target && user instanceof ServerPlayerEntity serverUser) {
+                applyAdrenalineEffect(serverUser, target);
 
-            ItemStack emptyShot = new ItemStack(ModItems.ADRENALINE_SHOT_EMPTY);
-            user.setStackInHand(hand, emptyShot);
+                ItemStack emptyShot = new ItemStack(ModItems.ADRENALINE_SHOT_EMPTY);
+                user.setStackInHand(hand, emptyShot);
 
-            serverUser.getInventory().markDirty();
-            serverUser.playerScreenHandler.sendContentUpdates();
+                serverUser.getInventory().markDirty();
+                serverUser.playerScreenHandler.sendContentUpdates();
 
-            return ActionResult.SUCCESS;
-        }
+                return ActionResult.SUCCESS;
+            }
         } else {
             return ActionResult.PASS;
         }

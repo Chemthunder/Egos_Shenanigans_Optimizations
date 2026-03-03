@@ -29,6 +29,6 @@ public class ModItemGroups {
                     }).build());
 
     public static void registerItemGroups() {
-        Egoistical.LOGGER.info("Registering Item Groups for " +Egoistical.MOD_ID);
+        Egoistical.LOGGER.info("Registering Item Groups for " + Egoistical.MOD_ID);
     }
 }

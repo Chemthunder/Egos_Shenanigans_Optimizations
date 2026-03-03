@@ -5,7 +5,6 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 
 public class AdrenalineEffect extends StatusEffect {
-
     public AdrenalineEffect() {
         super(StatusEffectCategory.BENEFICIAL, 0xFF45A2);
     }

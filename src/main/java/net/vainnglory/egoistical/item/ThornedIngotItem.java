@@ -22,16 +22,12 @@ public class ThornedIngotItem extends Item {
 
     @Override
     public Text getName(ItemStack stack) {
-        Text baseName = super.getName(stack);
-
-        return baseName.copy().setStyle(Style.EMPTY.withColor(rarity.color));
+        return super.getName(stack).copy().styled(style -> style.withColor(rarity.color));
     }
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        tooltip.add(Text.literal("A cursed gold alloy covered in magic thorns.")
-                .formatted(Formatting.GOLD, Formatting.ITALIC));
-        tooltip.add(Text.empty());
+        tooltip.add(Text.literal("A cursed gold alloy covered in magic thorns.").formatted(Formatting.GOLD, Formatting.ITALIC));
     }
 
     @Override

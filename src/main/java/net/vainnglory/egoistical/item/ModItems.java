@@ -49,7 +49,6 @@ public class ModItems {
     public static final HuskOfAllTradesItem HUSK_OF_ALL_TRADES = (HuskOfAllTradesItem) registerItem("husk_of_all_trades",
             new HuskOfAllTradesItem(new FabricItemSettings().maxCount(1), ModRarities.GOLDEN));
 
-
     private static Item registerItem(String name, Item item) {
         return Registry.register(Registries.ITEM, new Identifier(Egoistical.MOD_ID, name), item);
     }
@@ -62,6 +61,7 @@ public class ModItems {
             content.add(TRACKER);
             content.add(TRICK_BAG);
         });
+
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(content -> {
             content.add(ADRENALINE_SHOT_EMPTY);
             content.add(ADRENALINE_SHOT_FILLED);
@@ -69,6 +69,7 @@ public class ModItems {
             content.add(EMP);
             content.add(HUSK_OF_ALL_TRADES);
         });
+        
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(content -> {
             content.add(THORNED_INGOT);
         });

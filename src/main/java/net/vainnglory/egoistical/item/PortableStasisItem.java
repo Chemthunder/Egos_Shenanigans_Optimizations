@@ -52,7 +52,7 @@ public class PortableStasisItem extends Item {
 
     @Override
     public Text getName(ItemStack stack) {
-        return super.getName(stack).copy().setStyle(Style.EMPTY.withColor(rarity.color));
+        return super.getName(stack).copy().styled(style -> style.withColor(rarity.color));
     }
 
     @Override
@@ -62,8 +62,7 @@ public class PortableStasisItem extends Item {
         PlayerEntity player = context.getPlayer();
         ItemStack stack = context.getStack();
 
-        if (player == null) return ActionResult.PASS;
-
+        if (player != null) {
         if (world.getBlockState(pos).isOf(Blocks.LODESTONE)) {
             if (!world.isClient) {
                 bindToLodestone(stack, pos, world);
@@ -72,6 +71,7 @@ public class PortableStasisItem extends Item {
                 world.playSound(null, pos, SoundEvents.ITEM_LODESTONE_COMPASS_LOCK, SoundCategory.PLAYERS, 1.0f, 1.0f);
             }
             return ActionResult.success(world.isClient);
+        }
         }
 
         return ActionResult.PASS;

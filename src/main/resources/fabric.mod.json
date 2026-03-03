@@ -7,10 +7,6 @@
 	"authors": [
 		"VainnGlory"
 	],
-	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
-	},
 	"license": "ARR",
 	"icon": "assets/egoistical/icon.png",
 	"environment": "*",

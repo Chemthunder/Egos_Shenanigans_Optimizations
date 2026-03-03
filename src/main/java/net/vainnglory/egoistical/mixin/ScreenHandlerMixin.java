@@ -23,46 +23,39 @@ public abstract class ScreenHandlerMixin {
 
     @Inject(method = "onSlotClick", at = @At("HEAD"), cancellable = true)
     private void onSlotClickForItemCharging(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
-        if (button != 1 || actionType != SlotActionType.PICKUP)
-            {
-            return;
-        }
+        if (button == 1 && actionType == SlotActionType.PICKUP) {
+            ScreenHandler self = (ScreenHandler) (Object) this;
+            if (slotIndex < 0 || slotIndex >= self.slots.size()) {
+                return;
+            }
 
-        ScreenHandler self = (ScreenHandler) (Object) this;
+            Slot slot = self.slots.get(slotIndex);
+            ItemStack cursorStack = self.getCursorStack();
+            ItemStack slotStack = slot.getStack();
 
-        if (slotIndex < 0 || slotIndex >= self.slots.size()) {
-            return;
-        }
-
-        Slot slot = self.slots.get(slotIndex);
-        ItemStack cursorStack = self.getCursorStack();
-        ItemStack slotStack = slot.getStack();
-
-        if (cursorStack.isEmpty() || slotStack.isEmpty()) {
-            return;
-        }
-
-        if (cursorStack.isOf(Items.ENDER_PEARL) && slotStack.getItem() instanceof PortableStasisItem) {
-            handleStasisCharging(player, slot, cursorStack, slotStack, ci);
-            return;
-        }
-
-        if (slotStack.getItem() instanceof TrickBagItem && TrickBagItem.isEmpty(slotStack)) {
-            handleTrickBagFilling(player, slot, cursorStack, slotStack, ci);
-            return;
-        }
-        if (slotStack.getItem() instanceof HuskOfAllTradesItem) {
-            handleHuskModeSelection(player, slot, cursorStack, slotStack, ci);
-            return;
+            if (!cursorStack.isEmpty() && !slotStack.isEmpty()) {
+                if (cursorStack.isOf(Items.ENDER_PEARL) && slotStack.getItem() instanceof PortableStasisItem) {
+                    handleStasisCharging(player, slot, cursorStack, slotStack, ci);
+                    return;
+                }
+                if (slotStack.getItem() instanceof TrickBagItem && TrickBagItem.isEmpty(slotStack)) {
+                    handleTrickBagFilling(player, slot, cursorStack, slotStack, ci);
+                    return;
+                }
+                if (slotStack.getItem() instanceof HuskOfAllTradesItem) {
+                    handleHuskModeSelection(player, slot, cursorStack, slotStack, ci);
+                    return;
+                }
+            }
         }
     }
 
+    @Unique
     private void handleStasisCharging(PlayerEntity player, Slot slot, ItemStack cursorStack, ItemStack slotStack, CallbackInfo ci) {
         int currentCharge = PortableStasisItem.getCharge(slotStack);
 
         if (currentCharge >= 2) {
-            player.sendMessage(Text.literal("Stasis is already fully charged")
-                    .formatted(Formatting.GOLD), true);
+            player.sendMessage(Text.literal("Stasis is already fully charged").formatted(Formatting.GOLD), true);
             ci.cancel();
             return;
         }
@@ -90,40 +83,47 @@ public abstract class ScreenHandlerMixin {
         ci.cancel();
     }
 
+    @Unique
     private void handleTrickBagFilling(PlayerEntity player, Slot slot, ItemStack cursorStack, ItemStack slotStack, CallbackInfo ci) {
         String fillType = null;
 
-        if (cursorStack.isOf(Items.SAND)) {
-            fillType = TrickBagItem.SAND;
-        } else if (cursorStack.isOf(Items.ENDER_PEARL)) {
-            fillType = TrickBagItem.ENDER_PEARL;
-        } else if (cursorStack.isOf(Items.BLAZE_POWDER)) {
-            fillType = TrickBagItem.BLAZE_POWDER;
-        } else if (cursorStack.isOf(Items.SOUL_SAND)) {
-            fillType = TrickBagItem.SOUL_SAND;
-        }
+        if (fillType != null) {
+            if (cursorStack.isOf(Items.SAND)) {
+                fillType = TrickBagItem.SAND;
+            } else if (cursorStack.isOf(Items.ENDER_PEARL)) {
+                fillType = TrickBagItem.ENDER_PEARL;
+            } else if (cursorStack.isOf(Items.BLAZE_POWDER)) {
+                fillType = TrickBagItem.BLAZE_POWDER;
+            } else if (cursorStack.isOf(Items.SOUL_SAND)) {
+                fillType = TrickBagItem.SOUL_SAND;
+            }
 
-        if (fillType == null) {
-            return;
-        }
+        // switch (cursorStack) {
+            
+        // }
+        // use a switch statement for compactness
 
-        cursorStack.decrement(1);
-        TrickBagItem.setContents(slotStack, fillType);
-        slot.markDirty();
+            if (fillType == null) {
+                return;
+            }
 
-        String displayName = getDisplayName(fillType);
-        player.sendMessage(Text.literal("Filled bag with " + displayName + ".")
-                .formatted(Formatting.GOLD), true);
-        player.playSound(SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 1.0f, 1.2f);
+            cursorStack.decrement(1);
+            TrickBagItem.setContents(slotStack, fillType);
+            slot.markDirty();
 
-        if (player instanceof ServerPlayerEntity serverPlayer) {
-            serverPlayer.getInventory().markDirty();
-            serverPlayer.playerScreenHandler.sendContentUpdates();
-        }
+            String displayName = getDisplayName(fillType);
+            player.sendMessage(Text.literal("Filled bag with " + displayName + ".").formatted(Formatting.GOLD), true);
+            player.playSound(SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 1.0f, 1.2f);
 
+            if (player instanceof ServerPlayerEntity serverPlayer) {
+                serverPlayer.getInventory().markDirty();
+                serverPlayer.playerScreenHandler.sendContentUpdates();
+            }
         ci.cancel();
+        }
     }
 
+    @Unique
     private String getDisplayName(String fillType) {
         return switch (fillType) {
             case TrickBagItem.SAND -> "Sand";
@@ -133,44 +133,40 @@ public abstract class ScreenHandlerMixin {
             default -> "Unknown";
         };
     }
+
+    @Unique
     private void handleHuskModeSelection(PlayerEntity player, Slot slot, ItemStack cursorStack, ItemStack slotStack, CallbackInfo ci) {
         String mode = null;
 
-        if (cursorStack.isOf(Items.SOUL_SAND)) {
-            mode = HuskOfAllTradesItem.MODE_SOUL_SAND;
-        } else if (cursorStack.isOf(Items.SPIDER_EYE)) {
-            mode = HuskOfAllTradesItem.MODE_SPIDER_EYE;
-        } else if (cursorStack.isOf(Items.ENDER_PEARL)) {
-            mode = HuskOfAllTradesItem.MODE_ENDER_PEARL;
-        } else if (cursorStack.isOf(Items.GHAST_TEAR)) {
-            mode = HuskOfAllTradesItem.MODE_GHAST_TEAR;
-        }
+        if (mode != null) {
+            if (cursorStack.isOf(Items.SOUL_SAND)) {
+                mode = HuskOfAllTradesItem.MODE_SOUL_SAND;
+            } else if (cursorStack.isOf(Items.SPIDER_EYE)) {
+                mode = HuskOfAllTradesItem.MODE_SPIDER_EYE;
+            } else if (cursorStack.isOf(Items.ENDER_PEARL)) {
+                mode = HuskOfAllTradesItem.MODE_ENDER_PEARL;
+            } else if (cursorStack.isOf(Items.GHAST_TEAR)) {
+                mode = HuskOfAllTradesItem.MODE_GHAST_TEAR;
+            }
 
-        if (mode == null) {
-            return;
-        }
+            String currentMode = HuskOfAllTradesItem.getMode(slotStack);
+            if (mode.equals(currentMode)) {
+                player.sendMessage(Text.literal("Already set to " + HuskOfAllTradesItem.getModeDisplayName(mode)).formatted(Formatting.GOLD), true);
+                ci.cancel();
+                return;
+            }
+            cursorStack.decrement(1);
+            HuskOfAllTradesItem.setMode(slotStack, mode);
+            slot.markDirty();
+            player.sendMessage(Text.literal("Mode: " + HuskOfAllTradesItem.getModeDisplayName(mode)).formatted(Formatting.GOLD), true);
+            player.playSound(SoundEvents.BLOCK_SMITHING_TABLE_USE, 1.0f, 1.2f);
 
-        String currentMode = HuskOfAllTradesItem.getMode(slotStack);
-        if (mode.equals(currentMode)) {
-            player.sendMessage(Text.literal("Already set to " + HuskOfAllTradesItem.getModeDisplayName(mode))
-                    .formatted(Formatting.GOLD), true);
+            if (player instanceof ServerPlayerEntity serverPlayer) {
+                serverPlayer.getInventory().markDirty();
+                serverPlayer.playerScreenHandler.sendContentUpdates();
+            }
+
             ci.cancel();
-            return;
         }
-
-        cursorStack.decrement(1);
-        HuskOfAllTradesItem.setMode(slotStack, mode);
-        slot.markDirty();
-
-        player.sendMessage(Text.literal("Mode: " + HuskOfAllTradesItem.getModeDisplayName(mode))
-                .formatted(Formatting.GOLD), true);
-        player.playSound(SoundEvents.BLOCK_SMITHING_TABLE_USE, 1.0f, 1.2f);
-
-        if (player instanceof ServerPlayerEntity serverPlayer) {
-            serverPlayer.getInventory().markDirty();
-            serverPlayer.playerScreenHandler.sendContentUpdates();
-        }
-
-        ci.cancel();
     }
 }

@@ -12,15 +12,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerEntity.class)
-public class HuskAttackMixin {
-
+public abstract class HuskAttackMixin {
     @Inject(method = "attack", at = @At("HEAD"), cancellable = true)
     private void preventAttackDuringMetamorphosis(Entity target, CallbackInfo ci) {
         PlayerEntity player = (PlayerEntity) (Object) this;
         if (player instanceof ServerPlayerEntity serverPlayer) {
             if (MetamorphosisManager.isActive(serverPlayer.getUuid())) {
-                serverPlayer.sendMessage(Text.literal("You can't attack during Metamorphosis")
-                        .formatted(Formatting.GRAY), true);
+                serverPlayer.sendMessage(Text.literal("You can't attack during Metamorphosis").formatted(Formatting.GRAY), true);
                 ci.cancel();
             }
         }

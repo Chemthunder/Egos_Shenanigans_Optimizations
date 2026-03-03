@@ -14,7 +14,6 @@ import net.minecraft.world.World;
 import net.vainnglory.egoistical.item.ModItems;
 
 public class ThornedIngotRecipe extends SpecialCraftingRecipe {
-
     public ThornedIngotRecipe(Identifier id, CraftingRecipeCategory category) {
         super(id, category);
     }

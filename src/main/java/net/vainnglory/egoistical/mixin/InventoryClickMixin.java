@@ -13,32 +13,33 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ScreenHandler.class)
-public class InventoryClickMixin {
+public abstract class InventoryClickMixin {
+    @Unique
     private static final String STORED_ENCHANTS_KEY = "EgoisticalStoredEnchants";
 
     @Inject(method = "internalOnSlotClick", at = @At("RETURN"))
     private void restoreEnchantsOnSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
-        if (EMPManager.isAffected(player.getUuid())) {
-            return;
-        }
+        if (!EMPManager.isAffected(player.getUuid)) {
+            ItemStack cursorStack = player.currentScreenHandler.getCursorStack();
+            restoreIfNeeded(cursorStack);
 
-        ItemStack cursorStack = player.currentScreenHandler.getCursorStack();
-        restoreIfNeeded(cursorStack);
-
-        if (slotIndex >= 0 && slotIndex < player.currentScreenHandler.slots.size()) {
-            ItemStack slotStack = player.currentScreenHandler.getSlot(slotIndex).getStack();
-            restoreIfNeeded(slotStack);
+            if (slotIndex >= 0 && slotIndex < player.currentScreenHandler.slots.size()) {
+                ItemStack slotStack = player.currentScreenHandler.getSlot(slotIndex).getStack();
+                restoreIfNeeded(slotStack);
+            }
         }
     }
 
+    @Unique
     private void restoreIfNeeded(ItemStack stack) {
-        if (stack.isEmpty()) return;
+        if (!stack.isEmpty) {
+            NbtCompound nbt = stack.getNbt();
 
-        NbtCompound nbt = stack.getNbt();
-        if (nbt == null || !nbt.contains(STORED_ENCHANTS_KEY)) return;
-
-        NbtList storedEnchants = nbt.getList(STORED_ENCHANTS_KEY, 10);
-        nbt.put("Enchantments", storedEnchants);
-        nbt.remove(STORED_ENCHANTS_KEY);
+            if (nbt != null && nbt.contains(STORED_ENCHANTS_KEY)) {
+                NbtList storedEnchants = nbt.getList(STORED_ENCHANTS_KEY, 10);
+                nbt.put("Enchantments", storedEnchants);
+                nbt.remove(STORED_ENCHANTS_KEY);
+            }
+        }
     }
 }

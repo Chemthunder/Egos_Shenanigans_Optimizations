@@ -7,7 +7,6 @@ import net.minecraft.item.ItemStack;
 import net.vainnglory.egoistical.item.HuskOfAllTradesItem;
 
 public class MetamorphosisEnchantment extends Enchantment {
-
     public MetamorphosisEnchantment() {
         super(Rarity.VERY_RARE, EnchantmentTarget.WEAPON, new EquipmentSlot[]{EquipmentSlot.MAINHAND});
     }

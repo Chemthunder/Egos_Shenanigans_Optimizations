@@ -75,15 +75,14 @@ public class TrickBagItem extends Item {
 
     @Override
     public Text getName(ItemStack stack) {
-        Text baseName = super.getName(stack);
-
-        return baseName.copy().setStyle(Style.EMPTY.withColor(rarity.color));
+        return super.getName(stack).copy().styled(style -> style.withColor(rarity.color));
     }
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         return ActionResult.PASS;
     }
+    
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack bagStack = user.getStackInHand(hand);

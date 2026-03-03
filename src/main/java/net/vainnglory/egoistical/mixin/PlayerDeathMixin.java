@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerEntity.class)
-public class PlayerDeathMixin {
+public abstract class PlayerDeathMixin {
 
     @Inject(method = "onDeath", at = @At("HEAD"))
     private void dropHeadOnDeath(DamageSource damageSource, CallbackInfo ci) {

@@ -55,12 +55,15 @@ public class HuskOfAllTradesItem extends SwordItem {
     private static final UUID BLOOD_OFFERING_DAMAGE_ID = UUID.fromString("d4e7f8a9-1234-4b56-9abc-def012345678");
     private static final UUID BLOOD_OFFERING_SPEED_ID = UUID.fromString("d4e7f8a9-5678-4b56-9abc-def012345679");
 
+    public HuskOfAllTradesItem(Settings settings, ModRarities rarity) {
+        super(ToolMaterials.IRON, 4, -2.4f, settings);
+        this.rarity = rarity;
+    }
+
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
-
-        if (world.isClient || !(entity instanceof ServerPlayerEntity player)) return;
-
+        if (!world.isClient && entity instanceof ServerPlayerEntity player) {
         boolean isHolding = selected || player.getOffHandStack() == stack;
         boolean hasBloodOffering = EnchantmentHelper.getLevel(ModEnchantments.BLOOD_OFFERING, stack) > 0;
 
@@ -86,11 +89,7 @@ public class HuskOfAllTradesItem extends SwordItem {
                 speedAttr.removeModifier(BLOOD_OFFERING_SPEED_ID);
             }
         }
-    }
-
-    public HuskOfAllTradesItem(Settings settings, ModRarities rarity) {
-        super(ToolMaterials.IRON, 4, -2.4f, settings);
-        this.rarity = rarity;
+        }
     }
 
     @Override
@@ -160,16 +159,8 @@ public class HuskOfAllTradesItem extends SwordItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if (hand != Hand.MAIN_HAND) return TypedActionResult.pass(user.getStackInHand(hand));
-
+        if (hand == Hand.MAIN_HAND && !world.isClient && user instanceof ServerPlayerEntity serverPlayer && !user.getItemCooldownManager.isCoolingDown(this)) {
         ItemStack stack = user.getStackInHand(hand);
-
-        if (world.isClient) return TypedActionResult.success(stack);
-        if (!(user instanceof ServerPlayerEntity serverPlayer)) return TypedActionResult.pass(stack);
-
-        if (user.getItemCooldownManager().isCoolingDown(this)) {
-            return TypedActionResult.fail(stack);
-        }
 
         if (EnchantmentHelper.getLevel(ModEnchantments.METAMORPHOSIS, stack) > 0) {
             if (user.getHealth() <= 4.0f && !MetamorphosisManager.isActive(serverPlayer.getUuid())) {
@@ -189,6 +180,7 @@ public class HuskOfAllTradesItem extends SwordItem {
         if (user.isSneaking()) {
             return handleCharging(serverPlayer, stack);
         }
+    }
 
         return handleAbility(serverPlayer, stack, (ServerWorld) world);
     }

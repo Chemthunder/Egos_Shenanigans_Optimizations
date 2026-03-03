@@ -52,24 +52,16 @@ public class Egoistical implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("Initializing Egoistical Mod");
+        LOGGER.info("Mod has initialized successfully.");
 
         ModEffects.registerModEffects();
-        LOGGER.info("Registered custom effects");
-
         ModItems.registerModItems();
-        LOGGER.info("Registered mod items");
         ModItemGroups.registerItemGroups();
-
         ModRecipes.registerRecipes();
-        LOGGER.info("Registered mod recipes");
-
         ModSounds.registerSounds();
-
         ModEnchantments.registerEnchantments();
-        LOGGER.info("Registered mod enchantments");
-
         ModGameRules.registerGameRules();
+        LOGGER.info("Registration completed successfully!")
 
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             trackerUpdateTick++;
@@ -93,7 +85,6 @@ public class Egoistical implements ModInitializer {
                             1, 0.15, 0.0, 0.15, 0.01);
                 }
             });
-
 
             boolean shouldUpdateTrackers = false;
             if (trackerUpdateTick >= TRACKER_UPDATE_INTERVAL) {

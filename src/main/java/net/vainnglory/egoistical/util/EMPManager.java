@@ -11,9 +11,7 @@ import java.util.*;
 
 public class EMPManager {
     public static final String STORED_ENCHANTS_KEY = "EgoisticalStoredEnchants";
-
     private static final Map<UUID, Long> empExpireTimes = new HashMap<>();
-
     private static long currentWorldTime = 0;
 
     public static void disableEnchantments(ServerPlayerEntity player, int durationTicks) {

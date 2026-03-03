@@ -12,24 +12,23 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemEntity.class)
-public class ItemPickupMixin {
+public abstract class ItemPickupMixin {
+    @Unique
     private static final String STORED_ENCHANTS_KEY = "EgoisticalStoredEnchants";
 
     @Inject(method = "onPlayerCollision", at = @At("HEAD"))
     private void restoreEnchantsOnPickup(PlayerEntity player, CallbackInfo ci) {
-        if (EMPManager.isAffected(player.getUuid())) {
-            return;
-        }
-
         ItemEntity itemEntity = (ItemEntity) (Object) this;
         ItemStack stack = itemEntity.getStack();
 
-        if (stack.isEmpty()) return;
+        if (!EMPManager.isAffected(player.getUuid) && !stack.isEmpty) {
+            NbtCompound nbt = stack.getNbt();
 
-        NbtCompound nbt = stack.getNbt();
-        if (nbt == null || !nbt.contains(STORED_ENCHANTS_KEY)) return;
-        NbtList storedEnchants = nbt.getList(STORED_ENCHANTS_KEY, 10);
-        nbt.put("Enchantments", storedEnchants);
-        nbt.remove(STORED_ENCHANTS_KEY);
+            if (nbt != null && nbt.contains(STORED_ENCHANTS_KEY)) {
+                NbtList storedEnchants = nbt.getList(STORED_ENCHANTS_KEY, 10);
+                nbt.put("Enchantments", storedEnchants);
+                nbt.remove(STORED_ENCHANTS_KEY);
+            }
+        }
     }
 }

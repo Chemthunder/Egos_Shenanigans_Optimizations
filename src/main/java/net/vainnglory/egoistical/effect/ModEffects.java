@@ -7,7 +7,6 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
 public class ModEffects {
-
     public static final StatusEffect ADRENALINE = registerEffect("adrenaline", new AdrenalineEffect());
 
     private static StatusEffect registerEffect(String name, StatusEffect effect) {

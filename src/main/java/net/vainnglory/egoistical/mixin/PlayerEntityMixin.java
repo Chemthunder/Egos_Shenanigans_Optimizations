@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerEntity.class)
-public class PlayerEntityMixin {
+public abstract class PlayerEntityMixin {
 
     @Inject(method = "canFoodHeal", at = @At("HEAD"), cancellable = true)
     private void preventHealingInWater(CallbackInfoReturnable<Boolean> cir) {

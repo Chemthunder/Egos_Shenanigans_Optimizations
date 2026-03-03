@@ -15,29 +15,28 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ScreenHandler.class)
-public class CraftingRestrictMixin {
+public abstract class CraftingRestrictMixin {
 
     @Inject(method = "internalOnSlotClick", at = @At("HEAD"), cancellable = true)
     private void blockRestrictedCrafting(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
-        if (!(player instanceof ServerPlayerEntity serverPlayer)) return;
-        if (!ForEgoOnlyManager.isActive(serverPlayer.getServer())) return;
-        if (ForEgoOnlyManager.isOwner(player.getUuid())) return;
-
         ScreenHandler handler = (ScreenHandler) (Object) this;
-        if (!(handler instanceof CraftingScreenHandler)) return;
-        if (slotIndex != 0) return;
 
-        ItemStack result = handler.getSlot(0).getStack();
-        if (result.isEmpty()) return;
-
-        if (ForEgoOnlyManager.isRestricted(result.getItem())) {
-            player.sendMessage(
-                    Text.literal("You cannot craft this item.").formatted(Formatting.RED),
-                    true
-            );
-            ci.cancel();
+        if (player instanceof ServerPlayerEntity serverPlayer && ForEgoOnlyManager.isActive(serverPlayer.getServer()) && !ForEgoOnlyManager.isOwner(player.getUuid())) {
+        // if (!(player instanceof ServerPlayerEntity serverPlayer)) return;
+        // if (!ForEgoOnlyManager.isActive(serverPlayer.getServer())) return;
+        // if (ForEgoOnlyManager.isOwner(player.getUuid())) return;
+            if (handler instanceof CraftingScreenHandler && slotIndex == 0) {
+                ItemStack result = handler.getSlot(0).getStack();
+                if (!result.isEmpty()) {
+                    if (ForEgoOnlyManager.isRestricted(result.getItem())) {
+                        player.sendMessage(
+                            Text.literal("You cannot craft this item.").formatted(Formatting.RED),
+                            true
+                        );
+                        ci.cancel();
+                    }
+                }
+            }
         }
     }
 }
-
-
