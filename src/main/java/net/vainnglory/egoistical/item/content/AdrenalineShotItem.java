@@ -42,19 +42,15 @@ public class AdrenalineShotItem extends Item {
         ItemStack stack = user.getStackInHand(hand);
 
         if (!world.isClient) {
-            if (!filled) {
-                    user.sendMessage(Text.literal("The adrenaline shot is empty!").formatted(Formatting.RED), true);
-            }
-
+            if (!filled) user.sendMessage(Text.literal("The adrenaline shot is empty!").formatted(Formatting.RED), true);
+            
             if (user instanceof ServerPlayerEntity serverPlayer) {
                 applyAdrenalineEffect(serverPlayer, serverPlayer);
 
                 ItemStack emptyShot = new ItemStack(ModItems.ADRENALINE_SHOT_EMPTY, stack.getCount());
                 return TypedActionResult.success(emptyShot);
-        } else {
-            return TypedActionResult.fail(stack);
+            } 
         }
-
         return TypedActionResult.consume(stack);
     }
 
