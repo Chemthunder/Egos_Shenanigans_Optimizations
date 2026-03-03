@@ -91,8 +91,7 @@ public class AdrenalineShotItem extends Item {
         target.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 600, 1, false, false, true));
         target.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 600, 0, false, false, true));
 
-        target.getWorld().playSound(null, target.getX(), target.getY(), target.getZ(),
-                SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.PLAYERS, 1.0f, 1.0f);
+        target.getWorld().playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.PLAYERS, 1.0f, 1.0f);
 
         if (target instanceof ServerPlayerEntity targetPlayer) {
             if (target.equals(user)) {

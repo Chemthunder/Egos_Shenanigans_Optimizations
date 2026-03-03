@@ -39,19 +39,13 @@ public class EMPItem extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
-
-        if (user.getItemCooldownManager().isCoolingDown(this)) {
-            return TypedActionResult.fail(stack);
-        }
+        ServerWorld serverWorld = (ServerWorld) world;
 
         if (!user.getItemCooldownManager.isCoolingDown(this)) {
             if (!world.isClient && user instanceof ServerPlayerEntity serverPlayer) {
-                ServerWorld serverWorld = (ServerWorld) world;
-
-                world.playSound(null, user.getX(), user.getY(), user.getZ(),
-                        SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.PLAYERS, 2.0f, 0.5f);
-                world.playSound(null, user.getX(), user.getY(), user.getZ(),
-                        SoundEvents.BLOCK_BEACON_DEACTIVATE, SoundCategory.PLAYERS, 2.0f, 0.5f);
+            
+                world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.PLAYERS, 2.0f, 0.5f);
+                world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.BLOCK_BEACON_DEACTIVATE, SoundCategory.PLAYERS, 2.0f, 0.5f);
 
                 for (ServerPlayerEntity target : serverWorld.getPlayers()) {
                     if (target.squaredDistanceTo(user) <= EMP_RANGE * EMP_RANGE) {
